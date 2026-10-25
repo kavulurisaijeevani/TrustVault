@@ -66,10 +66,8 @@ See the known limitations listed under "Project Status".
 
 ## 8. Project Links
 
-Repository: To be added.
-
-Live application: To be added.
-
+Repository: https://github.com/kavulurisaijeevani/TrustVault
+Live application: To be added after deployment.
 Demo video: To be added.
 
 
@@ -137,11 +135,19 @@ TrustVault now includes deployment files:
 3. Render will create:
    - `trustvault-api` web service (Docker)
    - `trustvault-db` PostgreSQL database
-4. After creation, set `CORS_ALLOWED_ORIGINS` to your deployed frontend URL, for example:
-   - `https://your-app.vercel.app`
-5. Render automatically provides the database connection string through `ConnectionStrings__DefaultConnection`.
+4. In Render, set or verify these environment variables:
+   - `ASPNETCORE_ENVIRONMENT=Production`
+   - `ADMIN_PASSWORD=<strong unique password for the seeded administrator>`
+   - `JWT__KEY=<strong secret, at least 32 characters>` (Render can generate this)
+   - `JWT__ISSUER=TrustVault`
+   - `JWT__AUDIENCE=TrustVault`
+   - `CORS_ALLOWED_ORIGINS=https://your-frontend-url.example.com`
+   - `ConnectionStrings__DefaultConnection` is provided automatically from `trustvault-db`
+5. Deploy and check:
+   - `GET https://your-render-backend.onrender.com/`
+   - `GET https://your-render-backend.onrender.com/db-check`
 
-The backend listens on Render's `PORT` environment variable automatically.
+The backend listens on Render's `PORT` environment variable automatically. The Docker image exposes port 8080, but the application uses Render's assigned `PORT`.
 
 ### Frontend (Vercel)
 
@@ -160,10 +166,15 @@ The backend listens on Render's `PORT` environment variable automatically.
 
 ### Important production notes
 
-- Change the seeded administrator password immediately.
-- Set a strong `Jwt__Key` (Render can generate one).
+- The seeded administrator account uses `admin@trustvault.local`. Set `ADMIN_PASSWORD` before first production startup; production startup fails if it is missing. Development keeps a local fallback password for convenience.
+- Set a strong `JWT__KEY` (Render can generate one).
+- Set `CORS_ALLOWED_ORIGINS` to the exact deployed frontend URL. Do not use `*`.
 - Use HTTPS for all production traffic.
-- Replace `EnsureCreatedAsync()` with EF Core migrations before long-term production use.
+- Uploaded files are stored on the backend container filesystem under `storage/documents`. On Render's free tier this storage is ephemeral and files are not guaranteed to survive redeployment or restart. Use a persistent disk or external object storage before relying on uploaded files in production.
+- The backend currently creates the database schema with `EnsureCreatedAsync()`. Replace this with EF Core migrations before long-term production use.
+- `AllowedHosts` is currently `*` in `appsettings.json`; restrict it to the production host for stricter hardening.
+- JWTs are stored in browser `sessionStorage`; production should use httpOnly cookies and CSRF protection.
+- No document-content download endpoint is implemented; only metadata is returned.
 
 ## Project Overview
 

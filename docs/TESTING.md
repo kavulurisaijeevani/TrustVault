@@ -77,10 +77,15 @@ Use synthetic documents and test credentials only. Never use real passwords or c
 |---|---|---|
 | Frontend TypeScript check (`tsc --noEmit`) | Passed | Included in `npm run build` |
 | Frontend production build (`vite build`) | Passed | Output generated in `frontend/dist` |
-| Backend build (`dotnet build`) | Passed | Project targets .NET 10 |
+| Backend build (`dotnet build`, Release) | Passed | .NET 10 project; 0 warnings and 0 errors after production admin-password change |
 | Backend startup | Passed | API returned `{ "application": "TrustVault API", "status": "Running" }` |
 | PostgreSQL connectivity (`GET /db-check`) | Passed | Returned `{ "status": "Connected", "database": "PostgreSQL" }` |
 | Database schema creation | Passed | `EnsureCreatedAsync()` completed on startup |
+| Unauthenticated API authorization | Passed | `GET /api/documents` without a token returned `401` |
+| Production admin seeding | Passed | Production startup now requires `ADMIN_PASSWORD`; development keeps a local fallback |
+| Document storage authorization | Passed | Code review: protected controller, owner/permission checks, and no static file serving of `storage/documents` |
+| Document storage persistence | Blocked | Render container filesystem is ephemeral; uploaded files are not retained across redeploy/restart without a persistent disk or external storage |
+| CORS configuration | Passed | Policy reads `CORS_ALLOWED_ORIGINS`; default is localhost-only for development |
 
 ### Manual API checks
 

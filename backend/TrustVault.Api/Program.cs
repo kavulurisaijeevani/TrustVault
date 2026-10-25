@@ -131,11 +131,24 @@ using (var scope = app.Services.CreateScope())
     await db.Database.EnsureCreatedAsync();
     if (!await db.Users.AnyAsync(u => u.Role == "Admin"))
     {
+        var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
+        if (string.IsNullOrWhiteSpace(adminPassword))
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                adminPassword = "Admin123!";
+            }
+            else
+            {
+                throw new InvalidOperationException("ADMIN_PASSWORD is required to seed the production administrator account.");
+            }
+        }
+
         db.Users.Add(new User
         {
             Email = "admin@trustvault.local",
             DisplayName = "Administrator",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
             Role = "Admin"
         });
         await db.SaveChangesAsync();
