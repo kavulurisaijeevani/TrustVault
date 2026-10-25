@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: trustvault-api
+    runtime: docker
+    dockerfilePath: ./backend/TrustVault.Api/Dockerfile
+    dockerContext: ./backend/TrustVault.Api
+    plan: free
+    healthCheckPath: /db-check
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: TrustVault
+      - key: Jwt__Audience
+        value: TrustVault
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://your-frontend-url.example.com
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: trustvault-db
+          property: connectionString
+
+databases:
+  - name: trustvault-db
+    databaseName: trustvault
+    user: trustvault
+    plan: free

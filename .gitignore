@@ -1,0 +1,51 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.exe
+backend/**/*.dll
+backend/**/*.pdb
+backend/**/appsettings.Development.json
+backend/**/appsettings.Production.json
+backend/**/appsettings.Local.json
+backend/**/Properties/launchSettings.json
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+node_modules/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Secrets and private files
+.env
+.env.*
+!.env.example
+*.pfx
+*.key
+*.pem
+*.crt
+*.cer
+secrets.json
+*.secret
+
+# Uploaded documents and local storage
+/backend/TrustVault.Api/storage/
+/backend/TrustVault.Api/storage/documents/
